@@ -1,0 +1,9 @@
+.search-form {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  background-color: #4056b4;
+}
+.is-hidden {
+  opacity: 0;
+}
