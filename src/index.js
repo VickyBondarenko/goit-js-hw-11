@@ -4,23 +4,36 @@ import axios from 'axios';
 const form = document.getElementById('search-form');
 const gallery = document.querySelector('.gallery');
 const loadButton = document.querySelector('.load-more');
-// console.log(loadButton);
 
 const perPage = 8;
 let page = 1;
-form.addEventListener('submit', onSerch);
+let keyWord = '';
 
-function onSerch(event) {
+form.addEventListener('submit', handSubmit);
+
+function handSubmit(event) {
   event.preventDefault();
+  const inputValue = form.searchQuery.value.trim();
+  if (!inputValue || keyWord === inputValue) {
+    return;
+  }
+  keyWord = inputValue;
+  page = 1;
   gallery.innerHTML = '';
-  // let page = 1;
+  loadButton.classList.add('is-hidden');
+  onSerch(keyWord, page);
+}
 
-  const keyWord = form.searchQuery.value.trim();
+loadButton.addEventListener('click', () => {
+  loadButton.classList.add('is-hidden');
+  onSerch(keyWord);
+});
 
+function onSerch(keyWord) {
   getResponse(keyWord)
     .then(response => {
       const totalPages = Math.ceil(response.totalHits / perPage);
-      console.log(totalPages);
+
       if (page < 2) {
         Notify.success(`Hooray! We found ${response.totalHits} images.`);
       }
@@ -33,7 +46,6 @@ function onSerch(event) {
         );
         loadButton.classList.add('is-hidden');
       }
-      console.log(response);
     })
     .catch(error => {
       Notify.failure(error.message);
@@ -75,34 +87,6 @@ function renderGallery(fotos) {
   gallery.insertAdjacentHTML('beforeend', markupGallery);
   loadButton.classList.remove('is-hidden');
 }
-
-loadButton.addEventListener('click', onSerch);
-
-// function onLoad() {
-//   const keyWord = form.searchQuery.value.trim();
-
-//   getResponse(keyWord)
-//     .then(response => {
-//       const totalPages = Math.ceil(response.totalHits / perPage);
-//       console.log(totalPages);
-//       if (page < 2) {
-//         Notify.success(`Hooray! We found ${response.totalHits} images.`);
-//       }
-
-//       renderGallery(response.hits);
-//       page += 1;
-//       if (page > totalPages) {
-//         Notify.warning(
-//           "We're sorry, but you've reached the end of search results."
-//         );
-//         loadButton.classList.add('is-hidden');
-//       }
-//       console.log(response);
-//     })
-//     .catch(error => {
-//       Notify.failure(error.message);
-//     });
-// }
 
 function getResponse(name) {
   const API_KEY = `33587680-716f90511d290523ac71bcbd3`;
