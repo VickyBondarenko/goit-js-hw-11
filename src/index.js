@@ -1,11 +1,13 @@
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import axios from 'axios';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const form = document.getElementById('search-form');
 const gallery = document.querySelector('.gallery');
 const loadButton = document.querySelector('.load-more');
 
-const perPage = 8;
+const perPage = 40;
 let page = 1;
 let keyWord = '';
 
@@ -66,7 +68,7 @@ function renderGallery(fotos) {
         downloads,
       } = foto;
       return `<div class="photo-card">
-  <img   class="gallery__image" src=${webformatURL} alt=${tags} loading="lazy" />
+  <a class="gallery-link" href=${largeImageURL}><img   class="gallery-image" src=${webformatURL} alt=${tags} loading="lazy" />
   <div class="info">
     <p class="info-item">
       <b>Likes</b> ${likes}
@@ -80,7 +82,7 @@ function renderGallery(fotos) {
     <p class="info-item">
       <b>Downloads</b> ${downloads}
     </p>
-  </div>
+  </div></a>
 </div>`;
     })
     .join('');
@@ -105,3 +107,5 @@ function getResponse(name) {
       return response.data;
     });
 }
+const lightbox = new SimpleLightbox('.gallery a');
+lightbox.refresh();
