@@ -1,7 +1,7 @@
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import axios from 'axios';
-// import SimpleLightbox from 'simplelightbox';
-// import 'simplelightbox/dist/simple-lightbox.min.css';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const form = document.getElementById('search-form');
 const gallery = document.querySelector('.gallery');
@@ -28,7 +28,9 @@ function handSubmit(event) {
 
 loadButton.addEventListener('click', () => {
   loadButton.classList.add('is-hidden');
+
   onSerch(keyWord);
+  smoothScroll();
 });
 
 function onSerch(keyWord) {
@@ -36,12 +38,19 @@ function onSerch(keyWord) {
     .then(response => {
       const totalPages = Math.ceil(response.totalHits / perPage);
 
-      if (page < 2) {
+      if (page == 1) {
         Notify.success(`Hooray! We found ${response.totalHits} images.`);
       }
 
       renderGallery(response.hits);
+      if (page > 1) {
+        smoothScroll();
+      }
       page += 1;
+
+      const lightbox = new SimpleLightbox('.gallery a');
+      lightbox.refresh();
+
       if (page > totalPages) {
         Notify.warning(
           "We're sorry, but you've reached the end of search results."
@@ -107,5 +116,13 @@ function getResponse(name) {
       return response.data;
     });
 }
-// const lightbox = new SimpleLightbox('.gallery a');
-// lightbox.refresh();
+function smoothScroll() {
+  const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
+}

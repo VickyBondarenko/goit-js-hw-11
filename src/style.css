@@ -48,12 +48,13 @@
 .load-more {
   display: block;
   margin: 0 auto;
-  padding: 10px 12px;
+  margin-bottom: 20px;
+  padding: 5px 10px;
   border-radius: 4px;
   background-color: #4056b4;
   border: 1px solid #fff;
   color: #fff;
-  font-size: 20px;
+  font-size: 15px;
 }
 .submit-input {
   margin-right: 5px;
