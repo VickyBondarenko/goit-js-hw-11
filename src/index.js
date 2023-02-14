@@ -5,11 +5,23 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const form = document.getElementById('search-form');
 const gallery = document.querySelector('.gallery');
-const loadButton = document.querySelector('.load-more');
+// const loadButton = document.querySelector('.load-more');
+const guard = document.querySelector('.guard');
 
 const perPage = 40;
 let page = 1;
 let keyWord = '';
+
+const observer = new IntersectionObserver(
+  entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        onSerch(keyWord);
+      }
+    });
+  },
+  { rootMargin: '200px' }
+);
 
 form.addEventListener('submit', handSubmit);
 
@@ -22,16 +34,16 @@ function handSubmit(event) {
   keyWord = inputValue;
   page = 1;
   gallery.innerHTML = '';
-  loadButton.classList.add('is-hidden');
+  // loadButton.classList.add('is-hidden');
   onSerch(keyWord, page);
 }
 
-loadButton.addEventListener('click', () => {
-  loadButton.classList.add('is-hidden');
+// loadButton.addEventListener('click', () => {
+//   loadButton.classList.add('is-hidden');
 
-  onSerch(keyWord);
-  smoothScroll();
-});
+//   onSerch(keyWord);
+//   smoothScroll();
+// });
 
 // function onSerch(keyWord) {
 //   getResponse(keyWord)
@@ -67,7 +79,7 @@ async function onSerch(keyWord) {
   const data = await getResponse(keyWord);
 
   const totalPages = Math.ceil(data.totalHits / perPage);
-
+  console.log(totalPages);
   if (page == 1) {
     Notify.success(`Hooray! We found ${data.totalHits} images.`);
   }
@@ -81,17 +93,20 @@ async function onSerch(keyWord) {
 
   const lightbox = new SimpleLightbox('.gallery a');
   lightbox.refresh();
+  observer.observe(guard);
 
   if (page > totalPages) {
     Notify.warning(
       "We're sorry, but you've reached the end of search results."
     );
-    loadButton.classList.add('is-hidden');
+    observer.unobserve(guard);
+    return;
+    // loadButton.classList.add('is-hidden');
   }
 }
 
 function renderGallery(fotos) {
-  loadButton.classList.add('is-hidden');
+  // loadButton.classList.add('is-hidden');
   const markupGallery = fotos
     .map(foto => {
       const {
@@ -123,7 +138,7 @@ function renderGallery(fotos) {
     })
     .join('');
   gallery.insertAdjacentHTML('beforeend', markupGallery);
-  loadButton.classList.remove('is-hidden');
+  // loadButton.classList.remove('is-hidden');
 }
 
 // function getResponse(name) {
